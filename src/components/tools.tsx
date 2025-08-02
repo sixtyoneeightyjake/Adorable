@@ -109,6 +109,66 @@ export function ToolMessage({
     );
   }
 
+  // Context7 Tools
+  if (toolInvocation.type === "tool-resolve_library_id") {
+    return (
+      <ToolBlock
+        name="resolve library ID"
+        argsText={(toolInvocation.input as any)?.libraryName}
+        toolInvocation={toolInvocation}
+      />
+    );
+  }
+
+  if (toolInvocation.type === "tool-get_library_docs") {
+    return (
+      <ToolBlock
+        name="get library docs"
+        argsText={(toolInvocation.input as any)?.context7CompatibleLibraryID}
+        toolInvocation={toolInvocation}
+      />
+    );
+  }
+
+  // Tavily Tools
+  if (toolInvocation.type === "tool-tavily_search") {
+    return (
+      <ToolBlock
+        name="web search"
+        argsText={(toolInvocation.input as any)?.query}
+        toolInvocation={toolInvocation}
+      />
+    );
+  }
+
+  if (toolInvocation.type === "tool-tavily_extract") {
+    return (
+      <ToolBlock
+        name="extract content"
+        argsText={(toolInvocation.input as any)?.url}
+        toolInvocation={toolInvocation}
+      />
+    );
+  }
+
+  // Sequential Thinking Tool
+  if (toolInvocation.type === "tool-sequential_thinking") {
+    const input = toolInvocation.input as any;
+    return (
+      <ToolBlock
+        name="sequential thinking"
+        argsText={`Step ${input?.thoughtNumber}/${input?.totalThoughts}`}
+        toolInvocation={toolInvocation}
+      >
+        {input?.thought && (
+          <div className="px-4 py-2 bg-blue-50 rounded text-sm">
+            <strong>Thought:</strong> {input.thought}
+          </div>
+        )}
+      </ToolBlock>
+    );
+  }
+
   // Fallback for other tools
   return (
     <ToolBlock
@@ -246,9 +306,7 @@ function WriteFileTool({
 }
 
 function ToolBlock(props: {
-  toolInvocation?: UIMessage["parts"][number] & {
-    type: "tool-";
-  };
+  toolInvocation?: UIMessage["parts"][number];
   name: string;
   argsText?: string;
   children?: React.ReactNode;
@@ -266,7 +324,7 @@ function ToolBlock(props: {
           // )}
         >
           <div className="grid translate-y-[1px]">
-            {props.toolInvocation?.state !== "output-available" && (
+            {(props.toolInvocation as any)?.state !== "output-available" && (
               <div
                 className={cn(
                   "border border-black w-2 h-2 rounded-full inline-block col-start-1 col-end-1 row-start-1 row-end-1",
@@ -278,10 +336,10 @@ function ToolBlock(props: {
             <div
               className={cn(
                 "border w-2 h-2 rounded-full inline-block col-start-1 col-end-1 row-start-1 row-end-1",
-                props.toolInvocation?.state === "output-available" &&
-                  props.toolInvocation.result?.isError
+                (props.toolInvocation as any)?.state === "output-available" &&
+                  (props.toolInvocation as any).result?.isError
                   ? "bg-red-500 border-red-500"
-                  : props.toolInvocation?.state === "output-available"
+                  : (props.toolInvocation as any)?.state === "output-available"
                     ? "border-gray-400 bg-gray-400"
                     : "border-black bg-black"
               )}
@@ -292,9 +350,9 @@ function ToolBlock(props: {
         </div>
       </div>
       {(props.children && <div className="mb-2">{props.children}</div>) ||
-        (props.toolInvocation?.state === "output-available" &&
-          props.toolInvocation.output?.isError &&
-          props.toolInvocation.output?.content?.map(
+        ((props.toolInvocation as any)?.state === "output-available" &&
+          (props.toolInvocation as any).output?.isError &&
+          (props.toolInvocation as any).output?.content?.map(
             (content: { type: "text"; text: string }, i: number) => (
               <CodeBlock key={i} className="overflow-scroll py-2">
                 <CodeBlockCode

@@ -54,5 +54,174 @@ export const builderAgent = new Agent({
         return {};
       },
     }),
+
+    // Context7 Tools
+    resolve_library_id: createTool({
+      id: "resolve_library_id",
+      description: "Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.",
+      inputSchema: z.object({
+        libraryName: z.string().describe("Library name to search for and retrieve a Context7-compatible library ID."),
+      }),
+      execute: async ({ libraryName }) => {
+        try {
+          const response = await fetch("http://mcpo-app.eastus.azurecontainer.io:8000/context7/resolve-library-id", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ libraryName }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          return { error: `Failed to resolve library ID: ${error instanceof Error ? error.message : String(error)}` };
+        }
+      },
+    }),
+
+    get_library_docs: createTool({
+      id: "get_library_docs",
+      description: "Fetches up-to-date documentation for a library. You must call 'resolve_library_id' first to obtain the exact Context7-compatible library ID required to use this tool.",
+      inputSchema: z.object({
+        context7CompatibleLibraryID: z.string().describe("Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js') retrieved from 'resolve_library_id'."),
+        tokens: z.number().optional().describe("Maximum number of tokens of documentation to retrieve (default: 10000)."),
+        topic: z.string().optional().describe("Topic to focus documentation on (e.g., 'hooks', 'routing')."),
+      }),
+      execute: async ({ context7CompatibleLibraryID, tokens, topic }) => {
+        try {
+          const body: any = { context7CompatibleLibraryID };
+          if (tokens !== undefined) body.tokens = tokens;
+          if (topic !== undefined) body.topic = topic;
+
+          const response = await fetch("http://mcpo-app.eastus.azurecontainer.io:8000/context7/get-library-docs", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          return { error: `Failed to get library docs: ${error instanceof Error ? error.message : String(error)}` };
+        }
+      },
+    }),
+
+    // Tavily Tools
+    tavily_search: createTool({
+      id: "tavily_search",
+      description: "Search the web for information using Tavily. Returns results in markdown format with URLs, titles, and snippets.",
+      inputSchema: z.object({
+        query: z.string().describe("The search query to send."),
+        max_results: z.number().optional().describe("Number of results to return (default: 5, max: 10)."),
+      }),
+      execute: async ({ query, max_results }) => {
+        try {
+          const body: any = { query };
+          if (max_results !== undefined) body.max_results = max_results;
+
+          const response = await fetch("http://mcpo-app.eastus.azurecontainer.io:8000/tavily/tavily-search", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          return { error: `Failed to search with Tavily: ${error instanceof Error ? error.message : String(error)}` };
+        }
+      },
+    }),
+
+    tavily_extract: createTool({
+      id: "tavily_extract",
+      description: "Fetches data from a webpage and converts it into Markdown using Tavily.",
+      inputSchema: z.object({
+        url: z.string().describe("The URL to fetch and extract content from."),
+      }),
+      execute: async ({ url }) => {
+        try {
+          const response = await fetch("http://mcpo-app.eastus.azurecontainer.io:8000/tavily/tavily-extract", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ url }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          return { error: `Failed to extract content with Tavily: ${error instanceof Error ? error.message : String(error)}` };
+        }
+      },
+    }),
+
+    // Sequential Thinking Tool
+    sequential_thinking: createTool({
+      id: "sequential_thinking",
+      description: "A detailed tool for dynamic and reflective problem-solving through thoughts. This tool helps analyze problems through a flexible thinking process that can adapt and evolve.",
+      inputSchema: z.object({
+        thought: z.string().describe("Your current thinking step, which can include regular analytical steps, revisions, questions, realizations, changes in approach, hypothesis generation, or verification."),
+        nextThoughtNeeded: z.boolean().describe("Whether another thought step is needed."),
+        thoughtNumber: z.number().min(1).describe("Current thought number."),
+        totalThoughts: z.number().min(1).describe("Estimated total thoughts needed (can be adjusted up/down)."),
+        isRevision: z.boolean().optional().describe("Whether this revises previous thinking."),
+        revisesThought: z.number().min(1).optional().describe("Which thought number is being reconsidered."),
+        branchFromThought: z.number().min(1).optional().describe("Branching point thought number."),
+        branchId: z.string().optional().describe("Branch identifier."),
+        needsMoreThoughts: z.boolean().optional().describe("If more thoughts are needed."),
+      }),
+      execute: async ({ thought, nextThoughtNeeded, thoughtNumber, totalThoughts, isRevision, revisesThought, branchFromThought, branchId, needsMoreThoughts }) => {
+        try {
+          const body: any = {
+            thought,
+            nextThoughtNeeded,
+            thoughtNumber,
+            totalThoughts,
+          };
+
+          if (isRevision !== undefined) body.isRevision = isRevision;
+          if (revisesThought !== undefined) body.revisesThought = revisesThought;
+          if (branchFromThought !== undefined) body.branchFromThought = branchFromThought;
+          if (branchId !== undefined) body.branchId = branchId;
+          if (needsMoreThoughts !== undefined) body.needsMoreThoughts = needsMoreThoughts;
+
+          const response = await fetch("http://mcpo-app.eastus.azurecontainer.io:8000/sequential-thinking/sequentialthinking", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          return await response.json();
+        } catch (error) {
+          return { error: `Failed to process sequential thinking: ${error instanceof Error ? error.message : String(error)}` };
+        }
+      },
+    }),
   },
 });
