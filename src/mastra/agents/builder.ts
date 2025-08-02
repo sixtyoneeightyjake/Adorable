@@ -1,5 +1,5 @@
 import { SYSTEM_MESSAGE } from "@/lib/system";
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { openai } from "@ai-sdk/openai";
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
 import { Memory } from "@mastra/memory";
@@ -28,13 +28,11 @@ export const memory = new Memory({
   ],
 });
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY!,
-});
+// Using OpenAI directly instead of OpenRouter
 
 export const builderAgent = new Agent({
   name: "BuilderAgent",
-  model: openrouter.chat("anthropic/claude-3.5-sonnet") as any,
+  model: openai("o4-mini"),
   instructions: SYSTEM_MESSAGE,
   memory,
   tools: {
