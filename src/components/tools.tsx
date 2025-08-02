@@ -24,7 +24,7 @@ export function ToolMessage({
     return (
       <ToolBlock
         name="read file"
-        argsText={toolInvocation.input?.path?.split("/").slice(2).join("/")}
+        argsText={(toolInvocation.input as any)?.path?.split("/").slice(2).join("/")}
         toolInvocation={toolInvocation}
       />
     );
