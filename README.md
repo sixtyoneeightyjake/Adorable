@@ -1,4 +1,4 @@
-# Adorable
+# MojoCode
 
 Open-source version of **Lovable** - an AI agent that can make websites and apps through a chat interface.
 
@@ -17,6 +17,7 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
 - PostgreSQL database ([Neon](https://neon.tech) is easy and has a good free tier)
 - Redis (for caching and session management)
 - OpenRouter API key
+- OpenAI API key (for prompt enhancement feature)
 - Freestyle API key
 
 ### Installation
@@ -24,8 +25,8 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/freestyle-sh/adorable
-   cd adorable
+   git clone https://github.com/freestyle-sh/MojoCode
+   cd MojoCode
    ```
 
 2. Install dependencies:
@@ -43,10 +44,13 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
 
    ```
    # Database
-   DATABASE_URL=postgresql://username:password@localhost:5432/adorable
+   DATABASE_URL=postgresql://username:password@localhost:5432/MojoCode
 
    # OpenRouter API
    OPENROUTER_API_KEY=your_openrouter_api_key
+
+   # OpenAI API (for prompt enhancement)
+   OPENAI_API_KEY=your_openai_api_key
 
    # Freestyle API
    FREESTYLE_API_KEY=your_freestyle_api_key
@@ -63,7 +67,7 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
 The easiest way to run Redis locally is with Docker:
 
 ```bash
-docker run --name adorable-redis -p 6379:6379 -d redis
+docker run --name MojoCode-redis -p 6379:6379 -d redis
 ```
 
 This will start a Redis server on port 6379. If you already have Redis running, you can skip this step.
@@ -93,7 +97,7 @@ Go to the [Freestyle dashboard](https://admin.freestyle.sh/dashboard/domains) an
 Finally, add the following environment variable to your `.env` file:
 
 ```env
-PREVIEW_DOMAIN=<your-domain> # formatted like adorable.app
+PREVIEW_DOMAIN=<your-domain> # formatted like MojoCode.app
 ```
 
 8. Run the development server:

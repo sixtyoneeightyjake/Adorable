@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUp, SquareIcon, Paperclip, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { compressImage, CompressedImage } from "@/lib/image-compression";
+import { InlineLoader } from "@/components/ui/loading-states";
 
 interface PromptInputBasicProps {
   onSubmit?: (e?: React.FormEvent<HTMLFormElement>) => void;
@@ -120,7 +121,7 @@ export function PromptInputBasic({
         <PromptInputTextarea
           placeholder={
             isGenerating
-              ? "Adorable is working..."
+              ? "MojoCode is working..."
               : isCompressing
                 ? "Compressing images..."
                 : "Type your message here..."
@@ -143,27 +144,31 @@ export function PromptInputBasic({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-full"
+          className="h-8 w-8 rounded-full transition-all duration-200 hover:scale-105"
           onClick={() => fileInputRef.current?.click()}
-          disabled={isGenerating || disabled}
+          disabled={isGenerating || disabled || isCompressing}
         >
-          <Paperclip className="h-4 w-4" />
+          {isCompressing ? (
+            <InlineLoader size="sm" />
+          ) : (
+            <Paperclip className="h-4 w-4" />
+          )}
         </Button>
 
         {isGenerating ? (
           <Button
-            variant={"default"}
+            variant={"destructive"}
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full transition-all duration-200 hover:scale-105"
             onClick={stop}
           >
             <SquareIcon className="h-4 w-4" />
           </Button>
         ) : (
           <Button
-            variant={"default"}
+            variant={"premium"}
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full transition-all duration-200 hover:scale-105"
             disabled={
               isGenerating ||
               disabled ||

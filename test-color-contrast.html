@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mojo Code Color Contrast Test</title>
+    <style>
+        :root {
+            /* Mojo Code Brand Colors */
+            --brand-primary: hsl(15, 85%, 55%); /* Orange-red primary */
+            --brand-primary-foreground: hsl(0, 0%, 98%);
+            --brand-secondary: hsl(210, 25%, 25%); /* Dark blue-gray */
+            --brand-secondary-foreground: hsl(0, 0%, 98%);
+            --brand-accent: hsl(35, 85%, 50%); /* Golden accent */
+            --brand-accent-foreground: hsl(0, 0%, 9%);
+        }
+        
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .color-test {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        .primary-on-white {
+            background: white;
+            color: var(--brand-primary);
+        }
+        
+        .white-on-primary {
+            background: var(--brand-primary);
+            color: var(--brand-primary-foreground);
+        }
+        
+        .secondary-on-white {
+            background: white;
+            color: var(--brand-secondary);
+        }
+        
+        .white-on-secondary {
+            background: var(--brand-secondary);
+            color: var(--brand-secondary-foreground);
+        }
+        
+        .accent-on-white {
+            background: white;
+            color: var(--brand-accent);
+        }
+        
+        .dark-on-accent {
+            background: var(--brand-accent);
+            color: var(--brand-accent-foreground);
+        }
+        
+        .contrast-info {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mojo Code Color Contrast Test</h1>
+    <p>Testing color combinations for WCAG AA compliance (4.5:1 ratio for normal text)</p>
+    
+    <div class="color-test primary-on-white">
+        <div>Primary color on white background</div>
+        <div class="contrast-info">Orange-red (#E55A2B) on white - Should pass AA</div>
+    </div>
+    
+    <div class="color-test white-on-primary">
+        <div>White text on primary background</div>
+        <div class="contrast-info">White on orange-red - Should pass AA</div>
+    </div>
+    
+    <div class="color-test secondary-on-white">
+        <div>Secondary color on white background</div>
+        <div class="contrast-info">Dark blue-gray (#3A4A5C) on white - Should pass AA</div>
+    </div>
+    
+    <div class="color-test white-on-secondary">
+        <div>White text on secondary background</div>
+        <div class="contrast-info">White on dark blue-gray - Should pass AA</div>
+    </div>
+    
+    <div class="color-test accent-on-white">
+        <div>Accent color on white background</div>
+        <div class="contrast-info">Golden accent (#D97706) on white - Should pass AA</div>
+    </div>
+    
+    <div class="color-test dark-on-accent">
+        <div>Dark text on accent background</div>
+        <div class="contrast-info">Dark text on golden accent - Should pass AA</div>
+    </div>
+    
+    <script>
+        // Simple contrast ratio calculation for verification
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        
+        function getLuminance(r, g, b) {
+            const [rs, gs, bs] = [r, g, b].map(c => {
+                c = c / 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        }
+        
+        function getContrastRatio(color1, color2) {
+            const lum1 = getLuminance(color1.r, color1.g, color1.b);
+            const lum2 = getLuminance(color2.r, color2.g, color2.b);
+            const brightest = Math.max(lum1, lum2);
+            const darkest = Math.min(lum1, lum2);
+            return (brightest + 0.05) / (darkest + 0.05);
+        }
+        
+        // Test our brand colors
+        const brandPrimary = hexToRgb('#E55A2B'); // Approximate HSL to hex
+        const brandSecondary = hexToRgb('#3A4A5C'); // Approximate HSL to hex
+        const brandAccent = hexToRgb('#D97706'); // Approximate HSL to hex
+        const white = hexToRgb('#FFFFFF');
+        const black = hexToRgb('#171717');
+        
+        console.log('Color Contrast Ratios:');
+        console.log('Primary on white:', getContrastRatio(brandPrimary, white).toFixed(2));
+        console.log('White on primary:', getContrastRatio(white, brandPrimary).toFixed(2));
+        console.log('Secondary on white:', getContrastRatio(brandSecondary, white).toFixed(2));
+        console.log('White on secondary:', getContrastRatio(white, brandSecondary).toFixed(2));
+        console.log('Accent on white:', getContrastRatio(brandAccent, white).toFixed(2));
+        console.log('Black on accent:', getContrastRatio(black, brandAccent).toFixed(2));
+    </script>
+</body>
+</html>

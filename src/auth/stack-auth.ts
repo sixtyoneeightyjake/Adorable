@@ -14,6 +14,11 @@ export async function getUser() {
     throw new Error("User not found");
   }
 
+  // Get GitHub connection info
+  const githubAccount = user.connectedAccounts?.find(
+    account => account.providerId === 'github'
+  );
+
   if (!user?.serverMetadata?.freestyleIdentity) {
     const gitIdentity = await freestyle.createGitIdentity();
 
@@ -29,5 +34,10 @@ export async function getUser() {
   return {
     userId: user.id,
     freestyleIdentity: user.serverMetadata.freestyleIdentity,
+    githubAccount: githubAccount ? {
+      accessToken: githubAccount.accessToken,
+      username: githubAccount.accountId,
+      email: githubAccount.email,
+    } : null,
   };
 }

@@ -144,7 +144,7 @@ function PromptInputTextarea({
       onFocus={props.onFocus}
       onBlur={props.onBlur}
       className={cn(
-        "text-primary min-h-[44px] w-full resize-none border-none bg-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base sm:text-sm",
+        "text-logo-cream min-h-[44px] w-full resize-none border-none bg-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base sm:text-lg font-medium leading-relaxed placeholder:text-logo-cream/60 placeholder:font-normal",
         className,
       )}
       rows={1}

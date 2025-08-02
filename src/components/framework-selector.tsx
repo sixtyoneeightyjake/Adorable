@@ -30,7 +30,7 @@ export function FrameworkSelector({
           <Button
             variant="outline"
             size="sm"
-            className="h-7 gap-2 px-2 text-xs bg-transparent border-none hover:bg-gray-100 hover:bg-opacity-50 shadow-none"
+            className="h-7 gap-2 px-2 text-xs bg-transparent border-none hover:bg-gray-100 hover:bg-opacity-50 shadow-none text-logo-cream/80 hover:text-logo-cream font-medium"
             style={{ boxShadow: "none" }}
           >
             <Image
@@ -53,7 +53,7 @@ export function FrameworkSelector({
             <DropdownMenuItem
               key={key}
               onClick={() => onChange(key)}
-              className="gap-2 text-xs"
+              className="gap-2 text-xs font-medium text-gray-700 hover:text-gray-900"
             >
               <Image
                 src={template.logo}

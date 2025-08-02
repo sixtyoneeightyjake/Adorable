@@ -41,23 +41,23 @@ export function AppCard({ id, name, createdAt, onDelete }: AppCardProps) {
   };
 
   return (
-    <Card className="p-3 sm:p-4 border-b border rounded-md h-32 sm:h-36 relative w-full">
+    <Card className="glass-light border-2 border-red-500/30 hover:border-red-500/60 hover:bg-red-500/5 p-4 sm:p-5 rounded-xl h-36 sm:h-40 relative w-full transition-all duration-300 hover-lift hover:shadow-xl hover:shadow-red-500/20">
       <Link href={`/app/${id}`} className="cursor-pointer block">
         <CardHeader className="p-0">
-          <CardTitle className="text-sm sm:text-base truncate">
+          <CardTitle className="text-base sm:text-lg truncate text-logo-cream font-bold leading-tight">
             {name}
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">
+          <CardDescription className="text-sm sm:text-base text-logo-cream/70 font-medium mt-2">
             Created {createdAt.toLocaleDateString()}
           </CardDescription>
         </CardHeader>
       </Link>
 
-      <div className="absolute top-2 right-2 transition-opacity">
+      <div className="absolute top-3 right-3 transition-opacity">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none">
-              <MoreVertical className="h-4 w-4" />
+            <button className="p-2 rounded-lg glass-light border-2 border-red-500/40 hover:border-red-500/80 hover:bg-red-500/10 focus:outline-none transition-all duration-200">
+              <MoreVertical className="h-4 w-4 text-white/80" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

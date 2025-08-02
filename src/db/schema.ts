@@ -9,6 +9,11 @@ import {
 
 import type { UIMessage } from "ai";
 
+export const appSources = pgEnum("app_source", [
+  "template",
+  "github_import"
+]);
+
 export const appsTable = pgTable("apps", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull().default("Unnamed App"),
@@ -17,6 +22,9 @@ export const appsTable = pgTable("apps", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   baseId: text("base_id").notNull().default("nextjs-dkjfgdf"),
   previewDomain: text("preview_domain").unique(),
+  source: appSources("source").default("template"),
+  githubRepoUrl: text("github_repo_url"),
+  importedAt: timestamp("imported_at"),
 });
 
 export const appPermissions = pgEnum("app_user_permission", [

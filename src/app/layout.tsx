@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
-import { stackServerApp } from "../stack";
-import { StackProvider, StackTheme } from "@stackframe/stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { stackServerApp } from "@/auth/stack-auth";
@@ -20,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Adorable",
+  title: "MojoCode",
   description: "Open Source AI App Builder",
   manifest: "/manifest.json",
   // viewport: {
@@ -49,21 +47,22 @@ export default function RootLayout({
         className={cn(
           `${geistSans.variable} ${geistMono.variable} antialiased`
         )}
-      ><StackProvider app={stackServerApp}><StackTheme>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-          forcedTheme="light"
-        >
-          <Toaster />
-
-          <StackProvider app={stackServerApp}>
-            <StackTheme>{children}</StackTheme>
-          </StackProvider>
-        </ThemeProvider>
-      </StackTheme></StackProvider></body>
+      >
+        <StackProvider app={stackServerApp}>
+          <StackTheme>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem={false}
+              disableTransitionOnChange
+              forcedTheme="light"
+            >
+              <Toaster />
+              {children}
+            </ThemeProvider>
+          </StackTheme>
+        </StackProvider>
+      </body>
     </html>
   );
 }

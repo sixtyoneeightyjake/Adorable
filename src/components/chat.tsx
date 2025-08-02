@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { chatState } from "@/actions/chat-streaming";
 import { CompressedImage } from "@/lib/image-compression";
 import { useChatSafe } from "./use-chat";
+import { TypingIndicator, ChatMessageSkeleton } from "./ui/loading-states";
 
 export default function Chat(props: {
   appId: string;
@@ -52,7 +53,7 @@ export default function Chat(props: {
       },
       {
         headers: {
-          "Adorable-App-Id": props.appId,
+          "mojocode-App-Id": props.appId,
         },
       }
     );
@@ -83,7 +84,7 @@ export default function Chat(props: {
       },
       {
         headers: {
-          "Adorable-App-Id": props.appId,
+          "mojocode-App-Id": props.appId,
         },
       }
     );
@@ -94,7 +95,7 @@ export default function Chat(props: {
     await fetch("/api/chat/" + props.appId + "/stream", {
       method: "DELETE",
       headers: {
-        "Adorable-App-Id": props.appId,
+        "mojocode-App-Id": props.appId,
       },
     });
   }
@@ -113,6 +114,10 @@ export default function Chat(props: {
           {messages.map((message: any) => (
             <MessageBody key={message.id} message={message} />
           ))}
+          {/* Show typing indicator when AI is generating */}
+          {(props.isLoading || chat?.state === "running") && (
+            <TypingIndicator />
+          )}
         </ChatContainer>
       </div>
       <div className="flex-shrink-0 p-3 transition-all bg-background md:backdrop-blur-sm">
