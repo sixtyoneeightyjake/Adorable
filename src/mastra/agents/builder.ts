@@ -34,7 +34,7 @@ const openrouter = createOpenRouter({
 
 export const builderAgent = new Agent({
   name: "BuilderAgent",
-  model: openrouter.chat("horizon-beta"),
+  model: openrouter.chat("horizon-beta") as any,
   instructions: SYSTEM_MESSAGE,
   memory,
   tools: {

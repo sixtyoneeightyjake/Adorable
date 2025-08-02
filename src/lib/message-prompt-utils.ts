@@ -1,4 +1,4 @@
-import { Message } from "ai";
+import { UIMessage } from "ai";
 
 // Number of recent messages to keep intact
 const keepIntact = 2;
@@ -7,7 +7,7 @@ const keepIntact = 2;
  * Non-destructively truncates file contents in tool calls and results to reduce token usage
  * Returns a new array of messages with truncated content while preserving the originals
  */
-export function truncateFileToolCalls(messages: Message[]): Message[] {
+export function truncateFileToolCalls(messages: UIMessage[]): UIMessage[] {
   const messagesToProcess = messages.slice(0, -keepIntact);
   const messagesToKeep = messages.slice(-keepIntact);
 
@@ -24,23 +24,24 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
     // Process each part in the copied message
     if (messageCopy.parts) {
       for (const part of messageCopy.parts) {
-        if (part.type !== "tool-invocation") continue;
+        if (!part.type.startsWith("tool-")) continue;
 
-        const toolInvocation = part.toolInvocation;
-        // Handle both name and toolName (for compatibility)
-        const toolName = toolInvocation.toolName || toolInvocation.name;
+        // Extract tool name from the type (e.g., "tool-read_file" -> "read_file")
+        const toolName = part.type.replace("tool-", "");
 
         if (!toolName) continue;
+
+        // Cast to any to access tool invocation properties
+        const toolPart = part as any;
 
         // Handle tool calls with file content
         if (toolName === "read_file" || toolName === "read_multiple_files") {
           // Truncate the result if it exists
-          if (toolInvocation.state === "result" && toolInvocation.result) {
-            if (typeof toolInvocation.result.content === "string") {
-              toolInvocation.result.content =
-                "[File content truncated to save tokens]";
-            } else if (Array.isArray(toolInvocation.result.content)) {
-              toolInvocation.result.content = [
+          if (toolPart.state === "output-available" && toolPart.output) {
+            if (typeof toolPart.output === "string") {
+              toolPart.output = "[File content truncated to save tokens]";
+            } else if (Array.isArray(toolPart.output)) {
+              toolPart.output = [
                 {
                   type: "text",
                   text: "[File content truncated to save tokens]",
@@ -52,16 +53,16 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
         // Handle write_file and edit_file tool calls
         else if (toolName === "write_file" || toolName === "edit_file") {
           // Truncate the args in the tool call
-          if (toolInvocation.args && typeof toolInvocation.args === "object") {
-            if ("content" in toolInvocation.args) {
-              toolInvocation.args.content =
+          if (toolPart.input && typeof toolPart.input === "object") {
+            if ("content" in toolPart.input) {
+              toolPart.input.content =
                 "[Content truncated to save tokens]";
             }
             if (
-              "edits" in toolInvocation.args &&
-              Array.isArray(toolInvocation.args.edits)
+              "edits" in toolPart.input &&
+              Array.isArray(toolPart.input.edits)
             ) {
-              for (const edit of toolInvocation.args.edits) {
+              for (const edit of toolPart.input.edits) {
                 if ("replacement" in edit) {
                   edit.replacement = "[Content truncated to save tokens]";
                 }
@@ -70,15 +71,15 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
           }
 
           // Also truncate any diff output in the results
-          if (toolInvocation.state === "result" && toolInvocation.result) {
+          if (toolPart.state === "output-available" && toolPart.output) {
             if (
-              typeof toolInvocation.result.content === "string" &&
-              toolInvocation.result.content.includes("diff")
+              typeof toolPart.output === "string" &&
+              toolPart.output.includes("diff")
             ) {
-              toolInvocation.result.content =
+              toolPart.output =
                 "[Diff output truncated to save tokens]";
-            } else if (Array.isArray(toolInvocation.result.content)) {
-              toolInvocation.result.content = [
+            } else if (Array.isArray(toolPart.output)) {
+              toolPart.output = [
                 {
                   type: "text",
                   text: "[Diff output truncated to save tokens]",
@@ -89,19 +90,19 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
         }
         // Handle directory listings - truncate large outputs
         else if (toolName === "list_directory" || toolName === "search_files") {
-          if (toolInvocation.state === "result" && toolInvocation.result) {
+          if (toolPart.state === "output-available" && toolPart.output) {
             if (
-              Array.isArray(toolInvocation.result.content) &&
-              toolInvocation.result.content.length > 0 &&
-              typeof toolInvocation.result.content[0].text === "string" &&
-              toolInvocation.result.content[0].text.split("\n").length > 10
+              Array.isArray(toolPart.output) &&
+              toolPart.output.length > 0 &&
+              typeof toolPart.output[0].text === "string" &&
+              toolPart.output[0].text.split("\n").length > 10
             ) {
-              const originalText = toolInvocation.result.content[0].text;
+              const originalText = toolPart.output[0].text;
               const firstFewLines = originalText
                 .split("\n")
                 .slice(0, 5)
                 .join("\n");
-              toolInvocation.result.content = [
+              toolPart.output = [
                 {
                   type: "text",
                   text: `${firstFewLines}\n\n[...Directory listing truncated to save tokens...]`,
@@ -114,22 +115,22 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
         else if (toolName === "exec") {
           // Truncate the command if it's very long
           if (
-            toolInvocation.args &&
-            typeof toolInvocation.args === "object" &&
-            "command" in toolInvocation.args
+            toolPart.input &&
+            typeof toolPart.input === "object" &&
+            "command" in toolPart.input
           ) {
-            const command = String(toolInvocation.args.command);
+            const command = String(toolPart.input.command);
             if (command.length > 200) {
-              toolInvocation.args.command =
+              toolPart.input.command =
                 command.substring(0, 100) +
                 "... [command truncated to save tokens]";
             }
           }
 
           // Truncate the result if it exists and is long
-          if (toolInvocation.state === "result" && toolInvocation.result) {
-            if (typeof toolInvocation.result.content === "string") {
-              const content = toolInvocation.result.content;
+          if (toolPart.state === "output-available" && toolPart.output) {
+            if (typeof toolPart.output === "string") {
+              const content = toolPart.output;
               if (content.length > 500) {
                 const lines = content.split("\n");
                 if (lines.length > 20) {
@@ -141,10 +142,10 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
                       " lines) ...]\n",
                     ...lines.slice(-5),
                   ].join("\n");
-                  toolInvocation.result.content = truncatedContent;
+                  toolPart.output = truncatedContent;
                 } else if (content.length > 1000) {
                   // If it's just a few very long lines
-                  toolInvocation.result.content =
+                  toolPart.output =
                     content.substring(0, 300) +
                     "\n\n[... exec output truncated to save tokens (removed " +
                     (content.length - 600) +
@@ -153,11 +154,11 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
                 }
               }
             } else if (
-              Array.isArray(toolInvocation.result.content) &&
-              toolInvocation.result.content.length > 0 &&
-              typeof toolInvocation.result.content[0].text === "string"
+              Array.isArray(toolPart.output) &&
+              toolPart.output.length > 0 &&
+              typeof toolPart.output[0].text === "string"
             ) {
-              const text = toolInvocation.result.content[0].text;
+              const text = toolPart.output[0].text;
               if (text.length > 500) {
                 const lines = text.split("\n");
                 if (lines.length > 20) {
@@ -169,7 +170,7 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
                       " lines) ...]\n",
                     ...lines.slice(-5),
                   ].join("\n");
-                  toolInvocation.result.content = [
+                  toolPart.output = [
                     { type: "text", text: truncatedText },
                   ];
                 } else if (text.length > 1000) {
@@ -180,7 +181,7 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
                     (text.length - 600) +
                     " characters) ...]\n\n" +
                     text.substring(text.length - 300);
-                  toolInvocation.result.content = [
+                  toolPart.output = [
                     { type: "text", text: truncatedText },
                   ];
                 }
@@ -201,23 +202,21 @@ export function truncateFileToolCalls(messages: Message[]): Message[] {
   ];
 }
 
-export function repairBrokenMessages(messages: Message[]) {
+export function repairBrokenMessages(messages: UIMessage[]) {
   for (const message of messages) {
     if (message.role !== "assistant" || !message.parts) continue;
 
     for (const part of message.parts) {
-      if (part.type !== "tool-invocation") continue;
-      if (part.toolInvocation.state === "result" && part.toolInvocation.result)
+      if (!part.type.startsWith("tool-")) continue;
+
+      const toolPart = part as any;
+      if (toolPart.state === "output-available" && toolPart.output)
         continue;
 
-      part.toolInvocation = {
-        ...part.toolInvocation,
-        state: "result",
-        result: {
-          content: [{ type: "text", text: "unknown error" }],
-          isError: true,
-        },
-      };
+      // Set the tool part to have an error output
+      toolPart.state = "output-available";
+      toolPart.output = [{ type: "text", text: "unknown error" }];
+      toolPart.isError = true;
     }
   }
 }

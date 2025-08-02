@@ -14,7 +14,7 @@ export function ToolMessage({
     return (
       <ToolBlock
         name="listing directory"
-        argsText={toolInvocation.input?.path?.split("/").slice(2).join("/")}
+        argsText={(toolInvocation.input as any)?.path?.split("/").slice(2).join("/")}
         toolInvocation={toolInvocation}
       />
     );
@@ -31,11 +31,11 @@ export function ToolMessage({
   }
 
   if (toolInvocation.type === "tool-edit_file") {
-    return <EditFileTool toolInvocation={toolInvocation} />;
+    return <EditFileTool toolInvocation={toolInvocation as UIMessage["parts"][number] & { type: "tool-edit_file" }} />;
   }
 
   if (toolInvocation.type === "tool-write_file") {
-    return <WriteFileTool toolInvocation={toolInvocation} />;
+    return <WriteFileTool toolInvocation={toolInvocation as UIMessage["parts"][number] & { type: "tool-write_file" }} />;
   }
 
   if (toolInvocation.type === "tool-exec") {
@@ -43,7 +43,7 @@ export function ToolMessage({
       <ToolBlock
         name="exec"
         toolInvocation={toolInvocation}
-        argsText={toolInvocation.input?.command}
+        argsText={(toolInvocation.input as any)?.command}
       />
     );
   }
@@ -53,7 +53,7 @@ export function ToolMessage({
       <ToolBlock
         name="create directory"
         toolInvocation={toolInvocation}
-        argsText={toolInvocation.input?.path?.split("/").slice(2).join("/")}
+        argsText={(toolInvocation.input as any)?.path?.split("/").slice(2).join("/")}
       />
     );
   }
@@ -62,7 +62,7 @@ export function ToolMessage({
     return (
       <ToolBlock name="update todo list" toolInvocation={toolInvocation}>
         <div className="grid gap-2">
-          {toolInvocation.input?.items?.map?.(
+          {(toolInvocation.input as any)?.items?.map?.(
             (
               item: { description: string; completed: boolean },
               index: number
@@ -211,14 +211,15 @@ function EditFileTool({
     type: "tool-edit_file";
   };
 }) {
+  const input = toolInvocation.input as any;
   return (
     <ToolBlock
       name="edit file"
-      argsText={toolInvocation.input?.path?.split("/").slice(2).join("/")}
+      argsText={input?.path?.split("/").slice(2).join("/")}
       toolInvocation={toolInvocation}
     >
       <div className="grid gap-2">
-        {toolInvocation.input?.edits?.map?.(
+        {input?.edits?.map?.(
           (edit: { newText: string; oldText: string }, index: number) =>
             (edit.oldText || edit.newText) && (
               <CodeBlock key={index} className="overflow-scroll py-2">
@@ -276,17 +277,18 @@ function WriteFileTool({
     type: "tool-write_file";
   };
 }) {
+  const input = toolInvocation.input as any;
   return (
     <ToolBlock
       name="write file"
-      argsText={toolInvocation.input?.path?.split("/").slice(2).join("/")}
+      argsText={input?.path?.split("/").slice(2).join("/")}
       toolInvocation={toolInvocation}
     >
-      {toolInvocation.input?.content && (
+      {input?.content && (
         <CodeBlock className="overflow-scroll sticky bottom-0">
           <CodeBlockCode
             code={
-              toolInvocation.input?.content
+              input?.content
                 ?.split("\n")
                 .slice(0, 5)
                 .join("\n") ?? ""
@@ -294,9 +296,9 @@ function WriteFileTool({
             language={"tsx"}
             className="col-start-1 col-end-1 row-start-1 row-end-1 overflow-visible [&_code]:bg-green-200! bg-green-200"
           />
-          {toolInvocation.input?.content?.split("\n").length > 5 && (
+          {input?.content?.split("\n").length > 5 && (
             <div className="text-green-700 px-4 text-xs pb-2 font-mono">
-              +{toolInvocation.input?.content?.split("\n").length - 5} more
+              +{input?.content?.split("\n").length - 5} more
             </div>
           )}
         </CodeBlock>
