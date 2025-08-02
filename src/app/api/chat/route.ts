@@ -90,6 +90,9 @@ export async function sendMessage(
 
   const toolsets = await mcp.getToolsets();
 
+  // Log available tools for debugging
+  console.log("Available MCP tools:", Object.keys(toolsets || {}));
+
   // Extract text content from message parts to avoid type compatibility issues
   const textContent = message.parts
     ?.filter((part: any) => part.type === "text")
@@ -138,8 +141,15 @@ export async function sendMessage(
     resourceId: appId,
     maxSteps: 100,
     maxRetries: 0,
-    maxOutputTokens: 8000,
+    maxOutputTokens: 200000,
     toolsets,
+    providerOptions: {
+      openai: {
+        reasoningEffort: "high",
+        maxCompletionTokens: 200000,
+        parallelToolCalls: true,
+      },
+    },
 
     async onChunk() {
       if (Date.now() - lastKeepAlive > 5000) {

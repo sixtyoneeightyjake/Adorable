@@ -155,17 +155,24 @@ export function ToolMessage({
   if (toolInvocation.type === "tool-sequential_thinking") {
     const input = toolInvocation.input as any;
     return (
-      <ToolBlock
-        name="sequential thinking"
-        argsText={`Step ${input?.thoughtNumber}/${input?.totalThoughts}`}
-        toolInvocation={toolInvocation}
-      >
+      <div className="my-2 border-l-4 border-purple-400 bg-purple-50 dark:bg-purple-950/20 rounded-r-lg">
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-purple-200 dark:border-purple-800">
+          <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
+          <span className="font-medium text-purple-700 dark:text-purple-300 italic">
+            💭 Thinking... Step {input?.thoughtNumber}/{input?.totalThoughts}
+          </span>
+          {input?.isRevision && (
+            <span className="text-xs bg-purple-200 dark:bg-purple-800 px-2 py-1 rounded text-purple-700 dark:text-purple-300">
+              Revision
+            </span>
+          )}
+        </div>
         {input?.thought && (
-          <div className="px-4 py-2 bg-blue-50 rounded text-sm">
-            <strong>Thought:</strong> {input.thought}
+          <div className="px-4 py-3 text-sm text-purple-800 dark:text-purple-200 italic leading-relaxed">
+            {input.thought}
           </div>
         )}
-      </ToolBlock>
+      </div>
     );
   }
 

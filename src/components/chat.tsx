@@ -61,7 +61,7 @@ export default function Chat(props: {
   };
 
   const onSubmitWithImages = (text: string, images: CompressedImage[]) => {
-    const parts: Parameters<typeof sendMessage>[0]["parts"] = [];
+    const parts: any[] = [];
 
     if (text.trim()) {
       parts.push({
@@ -102,7 +102,7 @@ export default function Chat(props: {
 
   return (
     <div
-      className="flex flex-col h-full bg-background"
+      className="flex flex-col h-full"
       style={{ transform: "translateZ(0)" }}
     >
       {props.topBar}
@@ -120,7 +120,7 @@ export default function Chat(props: {
           )}
         </ChatContainer>
       </div>
-      <div className="flex-shrink-0 p-3 transition-all bg-background border-t border-border md:backdrop-blur-sm">
+      <div className="flex-shrink-0 p-3 transition-all bg-background md:backdrop-blur-sm">
         <PromptInputBasic
           stop={handleStop}
           input={input}
@@ -140,7 +140,7 @@ function MessageBody({ message }: { message: any }) {
   if (message.role === "user") {
     return (
       <div className="flex justify-end py-1 mb-4">
-        <div className="bg-muted rounded-xl px-4 py-1 max-w-[80%] ml-auto text-foreground">
+        <div className="bg-neutral-200 dark:bg-neutral-700 rounded-xl px-4 py-1 max-w-[80%] ml-auto">
           {message.parts.map((part: any, index: number) => {
             if (part.type === "text") {
               return <div key={index}>{part.text}</div>;

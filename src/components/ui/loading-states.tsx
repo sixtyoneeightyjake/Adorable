@@ -204,14 +204,41 @@ export function InlineLoader({
 }
 
 // Typing indicator for chat
-export function TypingIndicator() {
+export function TypingIndicator({ message }: { message?: string }) {
+  const [dots, setDots] = React.useState('');
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setDots(prev => prev.length >= 3 ? '' : prev + '.');
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="flex items-center space-x-1 p-3">
-      <SkeletonAvatar size="sm" />
-      <div className="flex space-x-1 p-3 bg-muted rounded-lg">
-        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+    <div className="flex items-start space-x-3 p-3">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+      </div>
+      <div className="flex-1 space-y-2">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium text-muted-foreground">
+            MojoCode is working{dots}
+          </span>
+          <div className="flex space-x-1">
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          </div>
+        </div>
+        {message && (
+          <div className="text-xs text-muted-foreground italic bg-muted/50 rounded px-2 py-1">
+            {message}
+          </div>
+        )}
+        <div className="text-xs text-muted-foreground">
+          Analyzing your request, planning the implementation, and generating code...
+        </div>
       </div>
     </div>
   );
