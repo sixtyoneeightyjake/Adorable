@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import Chat from "./chat";
 import { TopBar } from "./topbar";
-import { MessageCircle, Monitor } from "lucide-react";
+import { MessageCircle, Monitor, Code } from "lucide-react";
 import WebView from "./webview";
+import { VSCodeView } from "./vscode-view";
 import { UIMessage } from "ai";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -34,10 +35,11 @@ export default function AppWrapper({
   domain?: string;
   running: boolean;
 }) {
-  const [mobileActiveTab, setMobileActiveTab] = useState<"chat" | "preview">(
+  const [mobileActiveTab, setMobileActiveTab] = useState<"chat" | "preview" | "vscode">(
     "chat"
   );
   const [isMobile, setIsMobile] = useState(false);
+  const [showVSCode, setShowVSCode] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -57,9 +59,9 @@ export default function AppWrapper({
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-background" style={{ height: "100dvh" }}>
+    <div className="h-screen flex flex-col" style={{ height: "100dvh" }}>
       {/* Desktop and Mobile container */}
-      <div className="flex-1 overflow-hidden flex flex-col md:grid md:grid-cols-[1fr_2fr] bg-background">
+      <div className="flex-1 overflow-hidden flex flex-col md:grid md:grid-cols-[1fr_2fr]">
         {/* Chat component - positioned for both mobile and desktop */}
         <div
           className={
@@ -88,6 +90,7 @@ export default function AppWrapper({
                   repoId={repoId}
                   consoleUrl={consoleUrl}
                   codeServerUrl={codeServerUrl}
+                  onOpenVSCode={() => setShowVSCode(true)}
                 />
               }
               appId={appId}
@@ -129,10 +132,20 @@ export default function AppWrapper({
         </div>
       </div>
 
+      {/* VS Code overlay */}
+      {showVSCode && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <VSCodeView
+            codeServerUrl={codeServerUrl}
+            onBack={() => setShowVSCode(false)}
+          />
+        </div>
+      )}
+
       {/* Mobile tab navigation */}
       {isMobile && (
         <div
-          className="fixed bottom-0 left-0 right-0 flex border-t border-border bg-background/95 backdrop-blur-sm pb-safe"
+          className="fixed bottom-0 left-0 right-0 flex border-t bg-background/95 backdrop-blur-sm pb-safe"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <button

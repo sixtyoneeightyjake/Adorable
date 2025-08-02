@@ -22,19 +22,21 @@ export function TopBar({
   repoId,
   consoleUrl,
   codeServerUrl,
+  onOpenVSCode,
 }: {
   appName: string;
   children?: React.ReactNode;
   repoId: string;
   consoleUrl: string;
   codeServerUrl: string;
+  onOpenVSCode?: () => void;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="h-12 sticky top-0 flex items-center px-4 border-b border-border bg-background justify-between">
+    <div className="h-12 sticky top-0 flex items-center px-4 border-b border-gray-200 bg-background justify-between">
       <Link href={"/"}>
-        <HomeIcon className="h-5 w-5 text-foreground hover:text-primary transition-colors" />
+        <HomeIcon className="h-5 w-5" />
       </Link>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
@@ -64,6 +66,26 @@ export function TopBar({
                 Browser
               </div>
               <div>
+                <Button
+                  variant="outline"
+                  className="w-full flex justify-between items-center"
+                  onClick={() => {
+                    onOpenVSCode?.();
+                    setModalOpen(false);
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="/logos/vscode.svg"
+                      className="h-4 w-4"
+                      alt="VS Code Logo"
+                    />
+                    <span>VS Code (In App)</span>
+                  </div>
+                  <ComputerIcon className="h-4 w-4" />
+                </Button>
+              </div>
+              <div>
                 <a href={codeServerUrl} target="_blank" className="w-full">
                   <Button
                     variant="outline"
@@ -75,7 +97,7 @@ export function TopBar({
                         className="h-4 w-4"
                         alt="VS Code Logo"
                       />
-                      <span>VS Code</span>
+                      <span>VS Code (New Tab)</span>
                     </div>
                     <ArrowUpRightIcon className="h-4 w-4" />
                   </Button>
