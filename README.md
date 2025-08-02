@@ -16,7 +16,7 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
 - Node.js
 - PostgreSQL database ([Neon](https://neon.tech) is easy and has a good free tier)
 - Redis (for caching and session management)
-- Anthropic API key
+- OpenRouter API key
 - Freestyle API key
 
 ### Installation
@@ -45,8 +45,8 @@ Open-source version of **Lovable** - an AI agent that can make websites and apps
    # Database
    DATABASE_URL=postgresql://username:password@localhost:5432/adorable
 
-   # Anthropic API
-   ANTHROPIC_API_KEY=your_anthropic_api_key
+   # OpenRouter API
+   OPENROUTER_API_KEY=your_openrouter_api_key
 
    # Freestyle API
    FREESTYLE_API_KEY=your_freestyle_api_key

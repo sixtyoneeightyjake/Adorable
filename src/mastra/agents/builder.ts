@@ -1,5 +1,5 @@
 import { SYSTEM_MESSAGE } from "@/lib/system";
-import { anthropic } from "@ai-sdk/anthropic";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
 import { Memory } from "@mastra/memory";
@@ -28,9 +28,13 @@ export const memory = new Memory({
   ],
 });
 
+const openrouter = createOpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY!,
+});
+
 export const builderAgent = new Agent({
   name: "BuilderAgent",
-  model: anthropic("claude-3-7-sonnet-20250219"),
+  model: openrouter.chat("horizon-beta"),
   instructions: SYSTEM_MESSAGE,
   memory,
   tools: {
