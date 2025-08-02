@@ -57,9 +57,9 @@ export default function AppWrapper({
   }, []);
 
   return (
-    <div className="h-screen flex flex-col" style={{ height: "100dvh" }}>
+    <div className="h-screen flex flex-col bg-background" style={{ height: "100dvh" }}>
       {/* Desktop and Mobile container */}
-      <div className="flex-1 overflow-hidden flex flex-col md:grid md:grid-cols-[1fr_2fr]">
+      <div className="flex-1 overflow-hidden flex flex-col md:grid md:grid-cols-[1fr_2fr] bg-background">
         {/* Chat component - positioned for both mobile and desktop */}
         <div
           className={
@@ -132,7 +132,7 @@ export default function AppWrapper({
       {/* Mobile tab navigation */}
       {isMobile && (
         <div
-          className="fixed bottom-0 left-0 right-0 flex border-t bg-background/95 backdrop-blur-sm pb-safe"
+          className="fixed bottom-0 left-0 right-0 flex border-t border-border bg-background/95 backdrop-blur-sm pb-safe"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <button

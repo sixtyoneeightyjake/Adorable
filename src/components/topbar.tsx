@@ -32,9 +32,9 @@ export function TopBar({
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="h-12 sticky top-0 flex items-center px-4 border-b border-gray-200 bg-background justify-between">
+    <div className="h-12 sticky top-0 flex items-center px-4 border-b border-border bg-background justify-between">
       <Link href={"/"}>
-        <HomeIcon className="h-5 w-5" />
+        <HomeIcon className="h-5 w-5 text-foreground hover:text-primary transition-colors" />
       </Link>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>

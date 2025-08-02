@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { Button } from "./ui/button";
 import { RefreshCwIcon } from "lucide-react";
 import { ShareButton } from "./share-button";
+import Image from "next/image";
 
 export default function WebView(props: {
   repo: string;
@@ -24,8 +25,8 @@ export default function WebView(props: {
   const devServerRef = useRef<FreestyleDevServerHandle>(null);
 
   return (
-    <div className="flex flex-col overflow-hidden h-screen border-l transition-opacity duration-700 mt-[2px]">
-      <div className="h-12 border-b border-gray-200 items-center flex px-2 bg-background sticky top-0 justify-end gap-2">
+    <div className="flex flex-col overflow-hidden h-screen border-l border-border transition-opacity duration-700 mt-[2px] bg-background">
+      <div className="h-12 border-b border-border items-center flex px-2 bg-background sticky top-0 justify-end gap-2">
         <Button
           variant={"ghost"}
           size={"icon"}
@@ -41,13 +42,23 @@ export default function WebView(props: {
         repoId={props.repo}
         loadingComponent={({ iframeLoading, devCommandRunning }) =>
           !devCommandRunning && (
-            <div className="flex items-center justify-center h-full">
-              <div>
-                <div className="text-center">
+            <div className="flex items-center justify-center h-full bg-background">
+              <div className="text-center">
+                <div className="flex justify-center mb-6">
+                  <Image
+                    src="/logos/mojo.svg"
+                    alt="Mojo Code"
+                    width={120}
+                    height={120}
+                    className="animate-pulse"
+                    priority
+                  />
+                </div>
+                <div className="text-foreground text-lg font-medium mb-2">
                   {iframeLoading ? "JavaScript Loading" : "Starting VM"}
                 </div>
-                <div>
-                  <div className="loader"></div>
+                <div className="text-muted-foreground text-sm">
+                  Please wait while we prepare your environment...
                 </div>
               </div>
             </div>

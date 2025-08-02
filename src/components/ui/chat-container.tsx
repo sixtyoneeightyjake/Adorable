@@ -226,7 +226,7 @@ function ChatContainer({
   return (
     <div
       className={cn(
-        "flex flex-col overflow-y-auto h-full p-3", // Add more padding to accommodate code block
+        "flex flex-col overflow-y-auto h-full p-3 bg-background", // Add more padding to accommodate code block
         className,
       )}
       role="log"

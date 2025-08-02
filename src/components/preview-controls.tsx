@@ -20,13 +20,13 @@ export default function PreviewControls({
 
   return (
     <div className="flex justify-between items-center w-full">
-      <div className="inline-flex rounded-lg bg-gray-200 dark:bg-gray-800 p-0.5 relative">
+      <div className="inline-flex rounded-lg bg-muted p-0.5 relative">
         <button
           onClick={() => handleModeChange("web")}
           className={`px-4 py-1.5 text-sm z-10 relative transition-colors ${
             activeView === "web"
-              ? "text-gray-800 dark:text-white font-medium"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "text-foreground font-medium"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Web
@@ -35,14 +35,14 @@ export default function PreviewControls({
           onClick={() => handleModeChange("files")}
           className={`px-4 py-1.5 text-sm z-10 relative transition-colors ${
             activeView === "files"
-              ? "text-gray-800 dark:text-white font-medium"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "text-foreground font-medium"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Files
         </button>
         <div
-          className="absolute top-0.5 bottom-0.5 rounded-md bg-white dark:bg-gray-700 shadow-sm"
+          className="absolute top-0.5 bottom-0.5 rounded-md bg-background shadow-sm border border-border"
           style={{
             left: activeView === "web" ? "0.125rem" : "calc(50% + 0.125rem)",
             right: activeView === "files" ? "0.125rem" : "auto",

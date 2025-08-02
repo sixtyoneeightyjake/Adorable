@@ -52,10 +52,10 @@ export default function RootLayout({
           <StackTheme>
             <ThemeProvider
               attribute="class"
-              defaultTheme="light"
+              defaultTheme="dark"
               enableSystem={false}
               disableTransitionOnChange
-              forcedTheme="light"
+              forcedTheme="dark"
             >
               <Toaster />
               {children}
